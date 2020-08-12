@@ -34,8 +34,9 @@ Prefix ("_") makes it private and is best practice for State objects.
 Most of the app's logic resides here.
 */
 class _RandomWordsState extends State<RandomWords> {
-  final _suggestions = <WordPair>[];
   final _biggerFont = TextStyle(fontSize: 18.0);
+  final _saved = Set<WordPair>(); 
+  final _suggestions = <WordPair>[];
 
   // _buildSuggestions calls _buildRow once per word pairing.
   Widget _buildSuggestions() {
@@ -58,13 +59,30 @@ class _RandomWordsState extends State<RandomWords> {
     );
   }
 
-  // _buildRow will return a ListTile for a WordPair.
+  /*
+  _buildRow will return a ListTile for a WordPair. It will also create a trailing
+  icon to follow the title, which will when saved, be highlighted in red.
+  */
   Widget _buildRow(WordPair pair) {
+    final alreadySaved = _saved.contains(pair);
     return ListTile(
       title: Text(
         pair.asPascalCase,
         style: _biggerFont,
-      )
+      ),
+      trailing: Icon(
+        alreadySaved ? Icons.favorite : Icons.favorite_border,
+        color: alreadySaved ? Colors.red : null,
+      ),
+      onTap: () { // Call setState method when tapped
+        setState(() { // Notifies framework that state has changed.
+          if (alreadySaved) {
+          _saved.remove(pair);
+        } else {
+          _saved.add(pair);
+        }
+        });
+      }
     );
   }
 
